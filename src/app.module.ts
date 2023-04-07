@@ -5,6 +5,8 @@ import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { UserModule } from './user/user.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { typeormConfig } from './config/database/typeorm.config';
 
 @Module({
   imports: [
@@ -13,6 +15,7 @@ import { UserModule } from './user/user.module';
     //     name: 'USER-SERVICE',
     //   },
     // ]),
+    TypeOrmModule.forRoot(typeormConfig),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: `.env.${process.env.NODE_ENV}`,
