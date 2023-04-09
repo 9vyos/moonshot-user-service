@@ -6,7 +6,6 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { typeormConfig } from './config/database/typeorm.config';
 
 @Module({
   imports: [
@@ -15,10 +14,20 @@ import { typeormConfig } from './config/database/typeorm.config';
     //     name: 'USER-SERVICE',
     //   },
     // ]),
-    TypeOrmModule.forRoot(typeormConfig),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: `.env.${process.env.NODE_ENV}`,
+    }),
+    TypeOrmModule.forRoot({
+      type: 'mariadb',
+      host: process.env.DB_HOST,
+      port: 3306,
+      username: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_DATABASE,
+      entities: [__dirname + '/../../**/**/*.entity.{js,ts}'],
+      synchronize: true,
+      logging: true,
     }),
     // GraphQLModule.forRoot({
     //   driver: ApolloFederationDriver,

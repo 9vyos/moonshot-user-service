@@ -1,12 +1,15 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import * as dotenv from 'dotenv';
 
+dotenv.config();
 export const typeormConfig: TypeOrmModuleOptions = {
-  type: 'mysql',
-  host: 'localhost',
+  type: 'mariadb',
+  host: process.env.DB_HOST,
   port: 3306,
-  username: 'root',
-  password: '111111',
-  database: 'moonshot',
+  username: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_DATABASE,
   entities: [__dirname + '/../../**/**/*.entity.{js,ts}'],
   synchronize: true,
+  logging: true,
 };
