@@ -19,16 +19,17 @@ export class UserService {
     private dataSource: DataSource,
   ) {}
 
-  async signup(data: CreateUserRequest) {
+  async signup(request: CreateUserRequest) {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
-      await UserServiceUtils.validateEmail(this.userRepository, data.email);
-      const encodedPassword = await bcrypt.hash(data.password, 10);
+      await UserServiceUtils.validateEmail(this.userRepository, request.email);
+      const encodedPassword = await bcrypt.hash(request.password, 10);
       const user = await queryRunner.manager
         .getRepository(User)
-        .save(User.newUser(data.email, encodedPassword, data.name));
+        .save(User.newUser(request.email, encodedPassword, request.name, request.userType));
+      await queryRunner.commitTransaction();
       return UserInfoResponse.of(user);
     } catch (err) {
       console.log(err);
@@ -39,10 +40,7 @@ export class UserService {
   }
 
   async login(request: LoginUserRequest) {
-    const user = await UserServiceUtils.findUserByEmail(
-      this.userRepository,
-      request.email,
-    );
+    const user = await UserServiceUtils.findUserByEmail(this.userRepository, request.email);
     return await this.jwtService.signAsync({ id: user.id });
   }
 
@@ -52,10 +50,7 @@ export class UserService {
   }
 
   async updateUser(request: UpdateUserRequest) {
-    const user = await UserServiceUtils.findUserById(
-      this.userRepository,
-      request.id,
-    );
+    const user = await UserServiceUtils.findUserById(this.userRepository, request.id);
     user.updateName(request.name);
     await this.userRepository.save(user);
     return UserInfoResponse.of(user);

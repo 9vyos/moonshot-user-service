@@ -1,5 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { BaseEntity } from '../common/base.entity';
+import { UserType } from './user.type';
 
 @Entity()
 export class User extends BaseEntity {
@@ -15,15 +16,22 @@ export class User extends BaseEntity {
   @Column({ length: 500 })
   name: string;
 
-  constructor(email: string, password: string, name: string) {
+  @Column({
+    type: 'varchar',
+    default: UserType.GUEST,
+  })
+  userType: UserType = UserType.GUEST;
+
+  constructor(email: string, password: string, name: string, userType: UserType) {
     super();
     this.email = email;
     this.password = password;
     this.name = name;
+    this.userType = userType;
   }
 
-  static newUser(email: string, encodedPassword: string, name: string) {
-    return new User(email, encodedPassword, name);
+  static newUser(email: string, encodedPassword: string, name: string, userType: UserType) {
+    return new User(email, encodedPassword, name, userType);
   }
 
   updateName(name: string) {
