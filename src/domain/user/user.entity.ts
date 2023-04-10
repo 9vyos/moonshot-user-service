@@ -25,4 +25,8 @@ export class User extends BaseEntity {
   static newUser(email: string, encodedPassword: string, name: string) {
     return new User(email, encodedPassword, name);
   }
+
+  updateName(name: string) {
+    this.name = name;
+  }
 }

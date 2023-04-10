@@ -8,6 +8,8 @@ import { User } from '../domain/user/user.entity';
 import { UserInfoResponse } from './dto/response/user.info.response';
 import * as bcrypt from 'bcrypt';
 import { UserServiceUtils } from './user.service.utils';
+import { LoginUserRequest } from './dto/request/login.user.request';
+import { UpdateUserRequest } from './dto/request/update.user.request';
 
 @Injectable()
 export class UserService {
@@ -34,5 +36,28 @@ export class UserService {
     } finally {
       await queryRunner.release();
     }
+  }
+
+  async login(request: LoginUserRequest) {
+    const user = await UserServiceUtils.findUserByEmail(
+      this.userRepository,
+      request.email,
+    );
+    return await this.jwtService.signAsync({ id: user.id });
+  }
+
+  async getUser(id: number) {
+    const user = await UserServiceUtils.findUserById(this.userRepository, id);
+    return UserInfoResponse.of(user);
+  }
+
+  async updateUser(request: UpdateUserRequest) {
+    const user = await UserServiceUtils.findUserById(
+      this.userRepository,
+      request.id,
+    );
+    user.updateName(request.name);
+    await this.userRepository.save(user);
+    return UserInfoResponse.of(user);
   }
 }
