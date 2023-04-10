@@ -1,7 +1,5 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import * as dotenv from 'dotenv';
 
-dotenv.config();
 export const typeormConfig: TypeOrmModuleOptions = {
   type: 'mariadb',
   host: process.env.DB_HOST,
