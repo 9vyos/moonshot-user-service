@@ -1,0 +1,34 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: getong/mariadb-action@v1.1
+        with:
+          - host port: 3306
+          - container port: 3306
+          - mariadb version: '10.4.10'
+          - mysql database: 'test'
+          - mysql root password: '111111'
+          - mysql user: 'root'
+          - mysql password: '111111'
+      - uses: actions/checkout@v3
+      - name: Set up node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Test
+      - run: yarn install
+      - run: yarn test:e2e
