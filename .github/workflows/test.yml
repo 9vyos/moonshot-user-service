@@ -20,5 +20,17 @@ jobs:
         with:
           node-version: 18
 
+      - name: create .env.test
+        env:
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: '3306'
+          DB_USER: 'root'
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_DATABASE: 'test'
+        run: |
+          echo -e "DB_HOST=$DB_HOST\nDB_PORT=$DB_PORT\nDB_USER=$DB_USER\nDB_PASSWORD=$DB_PASSWORD\nDB_DATABASE=$DB_DATABASE" > .env.test
+
       - name: Test
-        run: yarn install && yarn test:e2e
+        run: |
+          yarn install
+          yarn test:e2e
