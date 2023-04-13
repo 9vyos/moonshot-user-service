@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { UserResolver } from './user.resolver';
-import { ClientsModule } from '@nestjs/microservices';
 import { jwtConstants } from '../config/auth/constants';
 import { JwtModule } from '@nestjs/jwt';
 import { UserService } from './user.service';
@@ -9,11 +8,6 @@ import { User } from '../domain/user/user.entity';
 
 @Module({
   imports: [
-    ClientsModule.register([
-      {
-        name: 'USER-SERVICE',
-      },
-    ]),
     JwtModule.register({
       global: true,
       secret: jwtConstants.secret,
