@@ -10,6 +10,7 @@ import * as bcrypt from 'bcrypt';
 import { UserServiceUtils } from './user.service.utils';
 import { LoginUserRequest } from './dto/request/login.user.request';
 import { UpdateUserRequest } from './dto/request/update.user.request';
+import { UserLoginResponse } from './dto/response/user.login.response';
 
 @Injectable()
 export class UserService {
@@ -41,7 +42,8 @@ export class UserService {
 
   async login(request: LoginUserRequest) {
     const user = await UserServiceUtils.findUserByEmail(this.userRepository, request.email);
-    return await this.jwtService.signAsync({ id: user.id });
+    const jwtToken = await this.jwtService.signAsync({ id: user.id });
+    return UserLoginResponse.of(user.id, jwtToken);
   }
 
   async getUser(id: number) {

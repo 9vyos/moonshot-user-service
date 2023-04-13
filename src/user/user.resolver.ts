@@ -4,6 +4,7 @@ import { CreateUserRequest } from './dto/request/create.user.request';
 import { UserService } from './user.service';
 import { LoginUserRequest } from './dto/request/login.user.request';
 import { UpdateUserRequest } from './dto/request/update.user.request';
+import { UserLoginResponse } from './dto/response/user.login.response';
 
 @Resolver()
 export class UserResolver {
@@ -19,7 +20,7 @@ export class UserResolver {
     return await this.userService.signup(request);
   }
 
-  @Mutation(() => String)
+  @Mutation(() => UserLoginResponse)
   async login(@Args('loginUserRequest') request: LoginUserRequest) {
     return await this.userService.login(request);
   }
