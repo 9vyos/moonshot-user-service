@@ -1,13 +1,17 @@
 import { Field, InputType } from '@nestjs/graphql';
 import { UserType } from '../../../domain/user/user.type';
+import { IsNotEmpty } from 'class-validator';
 
 @InputType()
 export class CreateUserRequest {
   @Field(() => String)
+  @IsNotEmpty()
   email: string;
   @Field(() => String)
+  @IsNotEmpty()
   password: string;
   @Field(() => String)
+  @IsNotEmpty()
   name: string;
   @Field(() => String)
   userType: UserType;
