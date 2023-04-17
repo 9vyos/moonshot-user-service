@@ -5,6 +5,9 @@ import { UserService } from './user.service';
 import { LoginUserRequest } from './dto/request/login.user.request';
 import { UpdateUserRequest } from './dto/request/update.user.request';
 import { UserLoginResponse } from './dto/response/user.login.response';
+import { UserId } from '../config/decorator/user.id.decorator';
+import { UserGuard } from '../config/guard/user.guard';
+import { UseGuards } from '@nestjs/common';
 
 @Resolver()
 export class UserResolver {
@@ -26,12 +29,14 @@ export class UserResolver {
   }
 
   @Mutation(() => UserInfoResponse)
-  async updateUser(@Args('updateUserRequest') request: UpdateUserRequest) {
-    return await this.userService.updateUser(request);
+  @UseGuards(UserGuard)
+  async updateUser(@Args('updateUserRequest') request: UpdateUserRequest, @UserId() userId: number) {
+    return await this.userService.updateUser(request, userId);
   }
 
   @Query(() => UserInfoResponse)
-  async getUser(@Args('id') id: number) {
-    return await this.userService.getUser(id);
+  @UseGuards(UserGuard)
+  async getUser(@UserId() userId: number) {
+    return await this.userService.getUser(userId);
   }
 }

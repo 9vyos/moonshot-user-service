@@ -51,10 +51,14 @@ export class UserService {
     return UserInfoResponse.of(user);
   }
 
-  async updateUser(request: UpdateUserRequest) {
-    const user = await UserServiceUtils.findUserById(this.userRepository, request.id);
+  async updateUser(request: UpdateUserRequest, userId) {
+    const user = await UserServiceUtils.findUserById(this.userRepository, userId);
     user.updateName(request.name);
     await this.userRepository.save(user);
     return UserInfoResponse.of(user);
+  }
+
+  async validateUser(user) {
+    return await UserServiceUtils.findUserById(this.userRepository, user.id);
   }
 }

@@ -16,5 +16,6 @@ import { User } from '../domain/user/user.entity';
     TypeOrmModule.forFeature([User]),
   ],
   providers: [UserResolver, UserService],
+  exports: [UserService],
 })
 export class UserModule {}
