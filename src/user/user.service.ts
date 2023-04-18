@@ -3,7 +3,6 @@ import { CreateUserRequest } from './dto/request/create.user.request';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserRepository } from '../domain/user/user.repository';
 import { JwtService } from '@nestjs/jwt';
-import { DataSource } from 'typeorm';
 import { User } from '../domain/user/user.entity';
 import { UserInfoResponse } from './dto/response/user.info.response';
 import * as bcrypt from 'bcrypt';
@@ -11,33 +10,23 @@ import { UserServiceUtils } from './user.service.utils';
 import { LoginUserRequest } from './dto/request/login.user.request';
 import { UpdateUserRequest } from './dto/request/update.user.request';
 import { UserLoginResponse } from './dto/response/user.login.response';
+import { Transactional } from 'typeorm-transactional';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private userRepository: UserRepository,
     private readonly jwtService: JwtService,
-    private dataSource: DataSource,
   ) {}
 
+  @Transactional()
   async signup(request: CreateUserRequest) {
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-    try {
-      await UserServiceUtils.validateEmail(this.userRepository, request.email);
-      const encodedPassword = await bcrypt.hash(request.password, 10);
-      const user = await queryRunner.manager
-        .getRepository(User)
-        .save(User.newUser(request.email, encodedPassword, request.name, request.userType));
-      await queryRunner.commitTransaction();
-      return UserInfoResponse.of(user);
-    } catch (err) {
-      console.log(err);
-      await queryRunner.rollbackTransaction();
-    } finally {
-      await queryRunner.release();
-    }
+    await UserServiceUtils.validateEmail(this.userRepository, request.email);
+    const encodedPassword = await bcrypt.hash(request.password, 10);
+    const user = await this.userRepository.save(
+      User.newUser(request.email, encodedPassword, request.name, request.userType),
+    );
+    return UserInfoResponse.of(user);
   }
 
   async login(request: LoginUserRequest) {
