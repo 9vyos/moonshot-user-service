@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserRequest } from './dto/request/create.user.request';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserRepository } from '../domain/user/user.repository';
@@ -31,6 +31,10 @@ export class UserService {
 
   async login(request: LoginUserRequest) {
     const user = await UserServiceUtils.findUserByEmail(this.userRepository, request.email);
+    const passwordCompare = await bcrypt.compare(request.password, user.password);
+    if (!passwordCompare) {
+      throw new BadRequestException('Password is not correct');
+    }
     const jwtToken = await this.jwtService.signAsync({ id: user.id });
     return UserLoginResponse.of(user.id, jwtToken);
   }
